@@ -81,12 +81,14 @@ public class GsonRead {
     }
 
     private static void capitalizeFirst() {
-        String desc;
         for (Map.Entry<String, Good> pair : store.entrySet()) {
             Good good = pair.getValue();
-            desc = good.getPureDesc();
+            String desc = good.getPureDesc();
+            String name = good.getName();
             String output = desc.substring(0, 1).toUpperCase() + desc.substring(1);
             good.setPureDesc(output);
+            String capName = name.substring(0, 1).toUpperCase() + name.substring(1);
+            good.setName(capName);
         }
     }
 

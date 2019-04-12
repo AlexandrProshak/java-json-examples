@@ -95,18 +95,18 @@ public class RowColumnSet {
         this.quantity.setCellValue(100);
         this.shipping.setCellValue("no");
         this.points.setCellValue(0);
-        this.weight.setCellValue(1);
+        this.weight.setCellValue(0);
         this.weight_unit.setCellValue("кг");
-        this.length.setCellValue(1);
+        this.length.setCellValue(0);
         this.width.setCellValue(1);
         this.height.setCellValue(1);
-        this.length.setCellValue("см");
-        this.status.setCellValue(true);
+        this.length_unit.setCellValue("см");
+        this.status.setCellValue("true");
         this.tax_class_id.setCellValue(0);
         this.stock_status_id.setCellValue(7);
         this.store_ids.setCellValue(0);
         this.sort_order.setCellValue(1);
-        this.subtract.setCellValue(true);
+        this.subtract.setCellValue("true");
         this.minimum.setCellValue(1);
     }
 

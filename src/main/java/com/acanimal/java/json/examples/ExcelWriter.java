@@ -36,6 +36,8 @@ public class ExcelWriter {
             HSSFCell description = columnSet.getDescription();
             HSSFCell meta_title = columnSet.getMeta_title();
             HSSFCell meta_description = columnSet.getMeta_description();
+            HSSFCell meta_keywords = columnSet.getMeta_keywords();
+            HSSFCell tags = columnSet.getTags();
 
             nameCell.setCellValue(good.getName());
             productIdCell.setCellValue(good.getId());
@@ -44,7 +46,9 @@ public class ExcelWriter {
             price.setCellValue(good.getStorePrice());
             description.setCellValue(good.getPureDesc());
             meta_title.setCellValue(good.getName());
+            meta_keywords.setCellValue(good.getName());
             meta_description.setCellValue(good.getPureDesc());
+            tags.setCellValue(good.getName());
 
             List<String> photosUrls = good.getPhotosUrls();
             Iterator<String> iterator1 = photosUrls.iterator();

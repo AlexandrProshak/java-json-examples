@@ -8,13 +8,21 @@ public class Good {
 
     private int id;
     private String name;
+    private int model;
     private String description;
     private String pureDesc;
     private int price;
     private int storePrice;
-
     private String mainPhotoUrl;
     private List<String> photosUrls = new ArrayList<>();
+
+    public int getModel() {
+        return model;
+    }
+
+    public void setModel(int model) {
+        this.model = model;
+    }
 
     public int getStorePrice() {
         return storePrice;
@@ -68,7 +76,7 @@ public class Good {
         return mainPhotoUrl;
     }
 
-    public void setMainPhotoUrl(String mainPhotoUrl) {
+    public void setMainPhotoPath(String mainPhotoUrl) {
         this.mainPhotoUrl = mainPhotoUrl;
     }
 
@@ -89,6 +97,7 @@ public class Good {
                 price == good.price &&
                 storePrice == good.storePrice &&
                 Objects.equals(name, good.name) &&
+                Objects.equals(model, good.model) &&
                 Objects.equals(description, good.description) &&
                 Objects.equals(pureDesc, good.pureDesc) &&
                 Objects.equals(mainPhotoUrl, good.mainPhotoUrl) &&
@@ -97,19 +106,6 @@ public class Good {
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, name, description, pureDesc, price, storePrice, mainPhotoUrl, photosUrls);
-    }
-
-    @Override
-    public String toString() {
-        return "Good{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", pureDesc='" + pureDesc + '\'' +
-                ", storePrice=" + storePrice +
-                ", mainPhotoUrl='" + mainPhotoUrl + '\'' +
-                ", photosUrls=" + photosUrls +
-                '}';
+        return Objects.hash(id, name, model, description, pureDesc, price, storePrice, mainPhotoUrl, photosUrls);
     }
 }

@@ -2,10 +2,8 @@ package com.acanimal.java.json.examples;
 
 import com.acanimal.java.json.examples.model.Good;
 import com.acanimal.java.json.examples.model.Item;
-import com.acanimal.java.json.examples.model.Person;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonReader;
 
 import emoji4j.EmojiUtils;
 
@@ -14,35 +12,33 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class GsonRead {
 
     private static final String FILENAME = "/examples/kupal.json";
+    private static final String BOOK_PATH = "/home/user000f/IdeaProjects/java-json-examples/src/main/resources/examples/book";
+    private static final String ALBUMS_PATH = "catalog/"+ "kupal/";
     private static final int PROFIT = 100;
+    private static final int INVOICE_GOODS_ROW_INDEX = 150;
+    private static final int INVOICE_ADD_IMG_ROW_INDEX = 630;
+    private static final int GOODS_START_ID = 200;
 
     private static final File file = new File(GsonRead.class.getClass().getResource(FILENAME).getFile());
-    private static final InputStream stream = GsonRead.class.getClass().getResourceAsStream(FILENAME);
-    private static AtomicInteger id = new AtomicInteger(0);
-    private static Map<String, Good> store = new HashMap<>();
 
+    private static AtomicInteger position = new AtomicInteger(GOODS_START_ID);
+    private static Map<String, Good> store = new LinkedHashMap<>();
 
     /**
      * With the object model read the whole JSON file is loaded on memory and the
      * application gets the desired element.
      */
-    public static void readDom() {
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(file));
+    private static void readDom() {
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             Gson gson = new GsonBuilder().create();
             Item[] items = gson.fromJson(reader, Item[].class);
             int length = items.length;
@@ -55,26 +51,20 @@ public class GsonRead {
                             .add(items[i].getSizes().get(index).getUrl());
                 } else {
                     Good good = new Good();
-                    good.setId(id.incrementAndGet());
+                    int id = position.incrementAndGet();
+                    good.setId(id);
+                    good.setModel(id + 25);
                     good.setDescription(items[i].getText());
-                    good.setMainPhotoUrl(items[i].getSizes().get(index).getUrl());
+                    good.setMainPhotoPath(items[i].getSizes().get(index).getUrl());
                     store.put(items[i].getText(), good);
-
                 }
             }
-
-        } catch (FileNotFoundException ex) {
+        } catch (IOException ex) {
             Logger.getLogger(GsonRead.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                reader.close();
-            } catch (IOException ex) {
-                Logger.getLogger(GsonRead.class.getName()).log(Level.SEVERE, null, ex);
-            }
         }
     }
-    
-    public static void setPrice() {
+
+    private static void setPrice() {
         for (Map.Entry<String, Good> pair: store.entrySet()) {
             Good good = pair.getValue();
             good.setPrice(parsePrice(good.getDescription()));
@@ -82,7 +72,7 @@ public class GsonRead {
         }
     }
 
-    public static int parsePrice(String description) {
+    private static int parsePrice(String description) {
         String priceStr = description
                 .substring(
                         description.indexOf("ОПТ") + 3,
@@ -90,73 +80,14 @@ public class GsonRead {
         return Integer.parseInt(priceStr.trim());
     }
 
-    /**
-     * This is a mixed implementation based on stream and object model. The JSON
-     * file is read in stream mode and each object is parsed in object model.
-     * With this approach we avoid to load all the object in memory and we are only
-     * loading one at a time.
-     */
-    public static void readStream() {
-        try {
-            JsonReader reader = new JsonReader(new InputStreamReader(stream, "UTF-8"));
-            Gson gson = new GsonBuilder().create();
-
-            // Read file in stream mode
-            reader.beginArray();
-            while (reader.hasNext()) {
-                // Read data into object model
-                Person person = gson.fromJson(reader, Person.class);
-                if (person.getId() == 0 ) {
-                    System.out.println("Stream mode: " + person);
-                }
-                break;
-            }
-            reader.close();
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(GsonRead.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(GsonRead.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    /**
-     * Read file in object model and later in stream mode.
-     *
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-//        long ti, tf;
-//
-//        ti = System.currentTimeMillis();
-//        System.out.println("Start reading in object mode: " + ti);
-
-        GsonRead.readDom();
-        GsonRead.setPrice();
-        GsonRead.parseDesc();
-        GsonRead.parseUrls();
-        GsonRead.parseAddUrls();
-
-        for (Map.Entry<String, Good> pair: store.entrySet()) {
+    private static void capitalizeFirst() {
+        String desc;
+        for (Map.Entry<String, Good> pair : store.entrySet()) {
             Good good = pair.getValue();
-            System.out.println("------------------------------------------");
-            System.out.println(good.getMainPhotoUrl());
-            System.out.println("id " + good.getId());
-            System.out.println("price " + good.getStorePrice());
-            System.out.println(good.getPureDesc());
-            System.out.println(good.getPhotosUrls().toString());
-            System.out.println("------------------------------------------");
+            desc = good.getPureDesc();
+            String output = desc.substring(0, 1).toUpperCase() + desc.substring(1);
+            good.setPureDesc(output);
         }
-
-
-//        tf = System.currentTimeMillis();
-//        System.out.println("Finish. Total time: " + (tf - ti));
-//
-//        ti = System.currentTimeMillis();
-//        System.out.println("Start reading in stream mode: " + ti);
-//        GsonRead.readStream();
-//        tf = System.currentTimeMillis();
-//        System.out.println("Finish. Total time: " + (tf - ti));
-
     }
 
     private static void parseAddUrls() {
@@ -180,14 +111,14 @@ public class GsonRead {
         String name;
         name = photoUrl.substring(photoUrl.lastIndexOf("/"), photoUrl.length())
                 .replace("/", "");
-        return name;
+        return ALBUMS_PATH + name;
     }
 
     private static void parseUrls() {
         for (Map.Entry<String, Good> pair: store.entrySet()) {
             Good good = pair.getValue();
             String photoUrl = good.getMainPhotoUrl();
-            good.setMainPhotoUrl(parsePhoto(photoUrl));
+            good.setMainPhotoPath(parsePhoto(photoUrl));
         }
     }
 
@@ -212,5 +143,52 @@ public class GsonRead {
             desc = desc.replace(priceString, "");
             good.setPureDesc(desc);
         }
+    }
+
+    private static void parseName() {
+        for (Map.Entry<String, Good> pair: store.entrySet()) {
+            Good good = pair.getValue();
+            good.setName(good.getPureDesc().substring(0, good.getPureDesc().length() / 3));
+        }
+    }
+
+    private static void inspect() {
+        for (Map.Entry<String, Good> pair: store.entrySet()) {
+            Good good = pair.getValue();
+            System.out.println("----------------------------------------------------------------------------");
+            System.out.println("main photo:         " + good.getMainPhotoUrl());
+            System.out.println("position:           " + good.getId());
+            System.out.println("name:               " + good.getName());
+            System.out.println("price:              " + good.getStorePrice());
+            System.out.println("description:        " + good.getPureDesc());
+            System.out.println("additional photo:   " + Arrays.deepToString(good.getPhotosUrls().toArray()));
+            System.out.println("=============================================================================");
+        }
+    }
+
+    /**
+     * Read file in object model and later in stream mode.
+     *
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        long ti, tf;
+
+        ti = System.currentTimeMillis();
+        System.out.println("Start reading ... ");
+
+        GsonRead.readDom();
+        GsonRead.setPrice();
+        GsonRead.parseDesc();
+        GsonRead.parseName();
+        GsonRead.parseUrls();
+        GsonRead.parseAddUrls();
+        GsonRead.capitalizeFirst();
+        ExcelWriter.write(store, BOOK_PATH + ".xls", INVOICE_GOODS_ROW_INDEX, INVOICE_ADD_IMG_ROW_INDEX);
+
+        inspect();
+
+        tf = System.currentTimeMillis();
+        System.out.println("Finish. Total time: " + (tf - ti));
     }
 }

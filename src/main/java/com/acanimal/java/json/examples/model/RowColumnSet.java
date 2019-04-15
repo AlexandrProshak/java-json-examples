@@ -39,6 +39,7 @@ public class RowColumnSet {
     private HSSFCell meta_description;
     private HSSFCell meta_keywords;
     private HSSFCell layout;
+    private HSSFCell related_ids;
     private HSSFCell tags;
     private HSSFCell stock_status_id;
     private HSSFCell store_ids;
@@ -81,12 +82,13 @@ public class RowColumnSet {
         this.meta_description = row.createCell(31);
         this.meta_keywords = row.createCell(32);
         this.layout = row.createCell(35);
-        this.tags = row.createCell(36);
+        this.related_ids = row.createCell(36);
+        this.tags = row.createCell(37);
         this.stock_status_id = row.createCell(33);
         this.store_ids = row.createCell(34);
-        this.sort_order = row.createCell(37);
-        this.subtract = row.createCell(38);
-        this.minimum = row.createCell(39);
+        this.sort_order = row.createCell(38);
+        this.subtract = row.createCell(39);
+        this.minimum = row.createCell(40);
         this.setDefault();
     }
 

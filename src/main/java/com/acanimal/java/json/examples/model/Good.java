@@ -8,7 +8,7 @@ public class Good {
 
     private int id;
     private String name;
-    private int model;
+    private String model;
     private String description;
     private String pureDesc;
     private int price;
@@ -16,11 +16,11 @@ public class Good {
     private String mainPhotoUrl;
     private List<String> photosUrls = new ArrayList<>();
 
-    public int getModel() {
+    public String getModel() {
         return model;
     }
 
-    public void setModel(int model) {
+    public void setModel(String model) {
         this.model = model;
     }
 
